@@ -24,13 +24,21 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
 class TokenData(BaseModel):
     email: Optional[str] = None
 
 class Login(BaseModel):
     email: EmailStr
     password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    id: str
+    email: str
+    name: str
+    role: str
+    profile_image_url: str
+
+    class Config:
+        from_attributes = True

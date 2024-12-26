@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('/api/v1/me', {
+          const response = await axios.get('/api/v1/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
           setUser(response.data);
@@ -42,23 +42,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signin = async (form: SigninForm) => {
     try {
-      const response = await axios.post('/api/v1/auth/signin', form);
-      const { token, ...userData } = response.data;
-      localStorage.setItem('token', token);
+      const response = await axios.post('/api/v1/auth/login', form);
+      const { access_token, token_type, ...userData } = response.data;
+      localStorage.setItem('token', access_token);
       setUser(userData);
       setError(null);
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Invalid email or password');
+      }
       throw err;
     }
   };
 
   const signup = async (form: SignupForm) => {
     try {
-      await axios.post('/api/v1/auth/signup', form);
+      const response = await axios.post('/api/v1/auth/signup', form);
+      setUser(response.data);  // Store the user data after signup
       setError(null);
-    } catch (err) {
-      setError('Signup failed. Please try again.');
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Signup failed. Please try again.');
+      }
       throw err;
     }
   };
@@ -76,8 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       setUser(response.data);
       setError(null);
-    } catch (err) {
-      setError('Failed to update profile');
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Failed to update profile');
+      }
       throw err;
     }
   };
@@ -88,8 +101,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setError(null);
-    } catch (err) {
-      setError('Failed to update password');
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Failed to update password');
+      }
       throw err;
     }
   };

@@ -1,7 +1,7 @@
 // src/components/admin/UsersManagement.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { User, UserRoleUpdateForm } from '../../types/auth';
+import { User } from '../../types/auth';
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -29,19 +29,18 @@ const UsersManagement: React.FC = () => {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      const updateForm: UserRoleUpdateForm = {
-        id: userId,
-        role: newRole
-      };
-      
-      await axios.put(`/api/v1/users/${userId}/role`, updateForm, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      console.log(`Updating user ${userId} to role ${newRole}`);
+      await axios.put(`/api/v1/users/${userId}/role`, 
+        { role: newRole },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
       
       // Refresh users list after update
       fetchUsers();
-    } catch (err) {
-      setError('Failed to update user role');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to update user role');
       console.error('Error updating user role:', err);
     }
   };
@@ -56,8 +55,8 @@ const UsersManagement: React.FC = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       fetchUsers();
-    } catch (err) {
-      setError('Failed to delete user');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete user');
       console.error('Error deleting user:', err);
     }
   };
