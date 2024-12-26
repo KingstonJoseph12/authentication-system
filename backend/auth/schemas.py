@@ -16,6 +16,9 @@ class UserUpdate(BaseModel):
     profile_image_url: Optional[str] = None
     role: Optional[str] = None
 
+class UserRoleUpdateForm(BaseModel):
+    role: str
+
 class User(UserBase):
     id: str
     role: str

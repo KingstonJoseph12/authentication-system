@@ -112,8 +112,6 @@ async def update_user_role(
     current_user: models.User = Depends(utils.get_admin_user),
     db: Session = Depends(get_db)
 ):
-    logger.debug(f"Updating user {user_id} role to {role_update.role}")
-    
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -121,7 +119,6 @@ async def update_user_role(
     db_user.role = role_update.role
     db.commit()
     db.refresh(db_user)
-    logger.debug(f"User role updated successfully to {db_user.role}")
     return db_user
 
 @router.delete("/users/{user_id}")
